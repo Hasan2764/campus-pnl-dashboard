@@ -198,5 +198,6 @@ pandas
 numpy
 plotly
 xlsxwriter
+openpyxl
 
 """)
