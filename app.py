@@ -19,11 +19,8 @@ st.set_page_config(
 
 st.markdown(
     """
-    <style>
-        .main { background-color: #0e1117; }
-        h1, h2, h3 { color: #ffffff; }
-        .stMetric { background-color: #1c1f26; padding: 10px; border-radius: 10px; }
-    </style>
+    <h1 style='text-align:center;'>Usman Public School System</h1>
+    <h3 style='text-align:center;'>Profit & Loss Dashboard</h3>
     """,
     unsafe_allow_html=True
 )
@@ -77,6 +74,9 @@ expense_df = clean_data(expense_df, "Expense")
 
 df = pd.concat([income_df, expense_df], ignore_index=True)
 
+df["Month"] = pd.to_datetime(df["Month"], errors="coerce")
+df["Month"] = df["Month"].dt.strftime("%b-%y")
+
 # ---------------------------------------------------------
 # FILTERS (SIDEBAR)
 # ---------------------------------------------------------
@@ -84,16 +84,13 @@ st.sidebar.header("🔎 Filters")
 
 campus_list = df["Campus"].dropna().unique().tolist()
 month_list = df["Month"].dropna().unique().tolist()
-category_list = df["Account"].dropna().unique().tolist()
 
 campus_filter = st.sidebar.multiselect("Campus", campus_list, default=campus_list)
 month_filter = st.sidebar.multiselect("Month", month_list, default=month_list)
-category_filter = st.sidebar.multiselect("Category", category_list, default=category_list)
 
 filtered_df = df[
     (df["Campus"].isin(campus_filter)) &
     (df["Month"].isin(month_filter)) &
-    (df["Account"].isin(category_filter))
 ]
 
 # ---------------------------------------------------------
@@ -140,19 +137,25 @@ with col1:
     st.plotly_chart(fig1, use_container_width=True)
 
 with col2:
-    fig2 = px.line(
-        trend_pivot.reset_index(),
-        x="Month",
-        y=["Income", "Expense", "Profit"],
-        title="Monthly Trend (Income vs Expense vs Profit)"
-    )
+   pie_df = pd.DataFrame({
+    "Type": ["Income", "Expense"],
+    "Amount": [income_total, expense_total]
+})
+fig2 = px.pie(
+    pie_df,
+    names="Type",
+    values="Amount",
+    title="Income vs Expense"
+)
     st.plotly_chart(fig2, use_container_width=True)
 
 # ---------------------------------------------------------
 # TABLE VIEW
 # ---------------------------------------------------------
 st.subheader("📋 Processed Data View")
-st.dataframe(filtered_df, use_container_width=True)
+display_df = filtered_df.reset_index(drop=True)
+display_df.index = display_df.index + 1
+st.dataframe(display_df)
 
 # ---------------------------------------------------------
 # EXPORT FUNCTIONS
@@ -188,16 +191,3 @@ with col2:
 # ---------------------------------------------------------
 # REQUIREMENTS.TXT
 # ---------------------------------------------------------
-st.markdown("""
----
-### requirements.txt
-
-
-streamlit
-pandas
-numpy
-plotly
-xlsxwriter
-openpyxl
-
-""")
