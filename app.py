@@ -124,12 +124,8 @@ expense_total = filtered_df[filtered_df["Type"] == "Expense"]["Amount"].sum()
 profit = income_total - expense_total
 
 # Monthly trend
-trend = filtered_df.groupby(["Month", "Type"])["Amount"].sum().reset_index()
-trend_pivot = trend.pivot(index="Month", columns="Type", values="Amount").fillna(0)
-trend_pivot["Profit"] = trend_pivot.get("Income", 0) - trend_pivot.get("Expense", 0)
 
 # MoM Change
-trend_pivot["MoM_Profit_%"] = trend_pivot["Profit"].pct_change().fillna(0) * 100
 
 # ---------------------------------------------------------
 # KPIs
@@ -160,12 +156,18 @@ with col1:
     st.plotly_chart(fig1, use_container_width=True)
 
 with col2:
-    fig2 = px.line(
-        trend_pivot.reset_index(),
-        x="Month",
-        y=["Income", "Expense", "Profit"],
-        title="Monthly Trend (Income vs Expense vs Profit)"
+    pie_df = pd.DataFrame({
+        "Type": ["Income", "Expense"],
+        "Amount": [income_total, expense_total]
+    })
+
+    fig2 = px.pie(
+        pie_df,
+        names="Type",
+        values="Amount",
+        title="Income vs Expense (%)"
     )
+
     st.plotly_chart(fig2, use_container_width=True)
 
 # ---------------------------------------------------------
