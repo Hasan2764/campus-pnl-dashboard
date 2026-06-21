@@ -137,16 +137,12 @@ with col1:
     st.plotly_chart(fig1, use_container_width=True)
 
 with col2:
-   pie_df = pd.DataFrame({
-    "Type": ["Income", "Expense"],
-    "Amount": [income_total, expense_total]
-})
-fig2 = px.pie(
-    pie_df,
-    names="Type",
-    values="Amount",
-    title="Income vs Expense"
-)
+    fig2 = px.line(
+        trend_pivot.reset_index(),
+        x="Month",
+        y=["Income", "Expense", "Profit"],
+        title="Monthly Trend (Income vs Expense vs Profit)"
+    )
     st.plotly_chart(fig2, use_container_width=True)
 
 # ---------------------------------------------------------
