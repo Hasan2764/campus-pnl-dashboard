@@ -90,7 +90,7 @@ month_filter = st.sidebar.multiselect("Month", month_list, default=month_list)
 
 filtered_df = df[
     (df["Campus"].isin(campus_filter)) &
-    (df["Month"].isin(month_filter)) &
+    (df["Month"].isin(month_filter))
 ]
 
 # ---------------------------------------------------------
