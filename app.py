@@ -7,7 +7,31 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 from io import BytesIO
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+def generate_pdf(df):
+    buffer = BytesIO()
 
+    doc = SimpleDocTemplate(buffer)
+    styles = getSampleStyleSheet()
+    elements = []
+
+    elements.append(Paragraph("Usman Public School System", styles['Title']))
+    elements.append(Paragraph("Profit & Loss Dashboard Report", styles['Heading2']))
+    elements.append(Spacer(1, 20))
+
+    elements.append(
+        Paragraph(f"Total Records: {len(df)}", styles['Normal'])
+    )
+
+    elements.append(
+        Paragraph(f"Total Amount: {df['Amount'].sum():,.0f}", styles['Normal'])
+    )
+
+    doc.build(elements)
+    buffer.seek(0)
+
+    return buffer
 # ---------------------------------------------------------
 # PAGE CONFIG + THEME SUPPORT
 # ---------------------------------------------------------
@@ -175,13 +199,14 @@ with col1:
     )
 
 with col2:
-    csv_data = filtered_df.to_csv(index=False).encode("utf-8")
-    st.download_button(
-        "⬇ Download CSV Report",
-        data=csv_data,
-        file_name="campus_pnl_report.csv",
-        mime="text/csv"
-    )
+    pdf_data = generate_pdf(filtered_df)
+
+st.download_button(
+    label="📄 Download PDF Report",
+    data=pdf_data,
+    file_name="campus_pnl_report.pdf",
+    mime="application/pdf"
+)
 
 # ---------------------------------------------------------
 # REQUIREMENTS.TXT
