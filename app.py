@@ -188,7 +188,15 @@ with col2:
 # ---------------------------------------------------------
 # REQUIREMENTS.TXT
 # ---------------------------------------------------------
-st.markdown(
-"""
+st.markdown("""
 ---
 ### requirements.txt
+
+
+streamlit
+pandas
+numpy
+plotly
+xlsxwriter
+
+""")
