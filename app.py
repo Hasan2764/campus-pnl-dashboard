@@ -231,42 +231,6 @@ with col2:
         file_name="campus_pnl_report.pdf",
         mime="application/pdf"
     )
-
-    styles = getSampleStyleSheet()
-    elements = []
-
-    # HEADER
-    elements.append(Paragraph("Usman Public School System", styles["Title"]))
-    elements.append(Paragraph("Profit & Loss Dashboard Report", styles["Heading2"]))
-    elements.append(Spacer(1, 12))
-
-    # KPIs
-    elements.append(Paragraph(f"Total Income: {income_total:,.0f}", styles["Normal"]))
-    elements.append(Paragraph(f"Total Expense: {expense_total:,.0f}", styles["Normal"]))
-    elements.append(Paragraph(f"Profit/Loss: {profit:,.0f}", styles["Normal"]))
-    elements.append(Spacer(1, 12))
-
-    # TABLE PREVIEW (first 20 rows only)
-    elements.append(Paragraph("Data Preview (Top 20 Rows)", styles["Heading3"]))
-
-    preview_df = df.head(20)
-    table_data = [preview_df.columns.tolist()] + preview_df.values.tolist()
-
-    from reportlab.platypus import Table
-    table = Table(table_data)
-    elements.append(table)
-
-    doc.build(elements)
-    buffer.seek(0)
-    return buffer
-
-st.download_button(
-    label="📄 Download PDF Report",
-    data=pdf_data,
-    file_name="campus_pnl_report.pdf",
-    mime="application/pdf"
-)
-
 # ---------------------------------------------------------
 # REQUIREMENTS.TXT
 # ---------------------------------------------------------
