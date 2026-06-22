@@ -20,15 +20,14 @@ def generate_pdf(df, income_total, expense_total, profit):
     elements.append(Paragraph("Profit & Loss Dashboard Report", styles['Heading2']))
     elements.append(Spacer(1, 20))
 
-    elements.append(
-        Paragraph(f"Total Records: {len(df)}", styles['Normal'])
-    )
-
-    elements.append(
     elements.append(Paragraph(f"Total Income: {income_total:,.0f}", styles['Normal']))
     elements.append(Paragraph(f"Total Expense: {expense_total:,.0f}", styles['Normal']))
     elements.append(Paragraph(f"Profit/Loss: {profit:,.0f}", styles['Normal']))
-    )
+
+    elements.append(Spacer(1, 20))
+
+    elements.append(Paragraph(f"Total Records: {len(df)}", styles['Normal']))
+    elements.append(Paragraph(f"Total Amount: {df['Amount'].sum():,.0f}", styles['Normal']))
 
     doc.build(elements)
     buffer.seek(0)
