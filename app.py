@@ -181,10 +181,26 @@ st.dataframe(display_df)
 # ---------------------------------------------------------
 # EXPORT FUNCTIONS
 # ---------------------------------------------------------
-def convert_excel(dataframe):
+def convert_excel(df):
     output = BytesIO()
+
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-        dataframe.to_excel(writer, index=False, sheet_name="Report")
+
+        # Full filtered data
+        df.to_excel(writer, index=False, sheet_name="Data")
+
+        # KPI Summary
+        summary = pd.DataFrame({
+            "Metric": ["Income", "Expense", "Profit"],
+            "Value": [income_total, expense_total, profit]
+        })
+
+        summary.to_excel(
+            writer,
+            index=False,
+            sheet_name="Summary"
+        )
+
     return output.getvalue()
 
 st.subheader("📤 Export Options")
@@ -201,7 +217,47 @@ with col1:
     )
 
 with col2:
-    pdf_data = generate_pdf(filtered_df)
+    pdf_data = generate_pdf(
+        filtered_df,
+        income_total,
+        expense_total,
+        profit
+    )
+
+    st.download_button(
+        label="📄 Download PDF Report",
+        data=pdf_data,
+        file_name="campus_pnl_report.pdf",
+        mime="application/pdf"
+    )
+
+    styles = getSampleStyleSheet()
+    elements = []
+
+    # HEADER
+    elements.append(Paragraph("Usman Public School System", styles["Title"]))
+    elements.append(Paragraph("Profit & Loss Dashboard Report", styles["Heading2"]))
+    elements.append(Spacer(1, 12))
+
+    # KPIs
+    elements.append(Paragraph(f"Total Income: {income_total:,.0f}", styles["Normal"]))
+    elements.append(Paragraph(f"Total Expense: {expense_total:,.0f}", styles["Normal"]))
+    elements.append(Paragraph(f"Profit/Loss: {profit:,.0f}", styles["Normal"]))
+    elements.append(Spacer(1, 12))
+
+    # TABLE PREVIEW (first 20 rows only)
+    elements.append(Paragraph("Data Preview (Top 20 Rows)", styles["Heading3"]))
+
+    preview_df = df.head(20)
+    table_data = [preview_df.columns.tolist()] + preview_df.values.tolist()
+
+    from reportlab.platypus import Table
+    table = Table(table_data)
+    elements.append(table)
+
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
 
 st.download_button(
     label="📄 Download PDF Report",
