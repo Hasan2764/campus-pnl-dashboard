@@ -9,7 +9,7 @@ import plotly.express as px
 from io import BytesIO
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
-def generate_pdf(df):
+def generate_pdf(df, income_total, expense_total, profit):
     buffer = BytesIO()
 
     doc = SimpleDocTemplate(buffer)
@@ -25,7 +25,9 @@ def generate_pdf(df):
     )
 
     elements.append(
-        Paragraph(f"Total Amount: {df['Amount'].sum():,.0f}", styles['Normal'])
+    elements.append(Paragraph(f"Total Income: {income_total:,.0f}", styles['Normal']))
+    elements.append(Paragraph(f"Total Expense: {expense_total:,.0f}", styles['Normal']))
+    elements.append(Paragraph(f"Profit/Loss: {profit:,.0f}", styles['Normal']))
     )
 
     doc.build(elements)
